@@ -1,10 +1,5 @@
 <div align="center">
-
-<img src="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80" alt="IMPACT Banner" width="100%" style="border-radius:12px;"/>
-
-<br/>
-<br/>
-
+    
 # IMPACT
 ### Intelligent Municipal Action & City Triage
 
