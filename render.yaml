@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: impact-ml-server
+    env: python
+    buildCommand: pip install -r ml-server/requirements.txt
+    startCommand: python ml-server/app.py
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0

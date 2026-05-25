@@ -53,8 +53,9 @@ const createComplaint = asyncHandler(async (req, res) => {
 
     try {
         // Run text and image ML calls in PARALLEL — no sequential waiting
+        const ML_BASE = process.env.ML_API_URL || 'http://127.0.0.1:8000';
         const mlPromises = [
-            fetch('http://127.0.0.1:8000/api/ml/analyze-text', {
+            fetch(`${ML_BASE}/api/ml/analyze-text`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ text: description })
@@ -63,7 +64,7 @@ const createComplaint = asyncHandler(async (req, res) => {
 
         if (image) {
             mlPromises.push(
-                fetch('http://127.0.0.1:8000/api/ml/analyze-image', {
+                fetch(`${ML_BASE}/api/ml/analyze-image`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ image })
