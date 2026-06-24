@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IMPACT — Interview Prep Guide</title>
+  <meta name="description" content="Interview preparation guide for the IMPACT civic platform project — YOLOv8 garbage detection and NLP complaint triage explained." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-primary: #080d1a;
+      --bg-card: #0f1628;
+      --accent-orange: #f97316;
+      --accent-blue: #3b82f6;
+      --accent-purple: #8b5cf6;
+      --accent-green: #10b981;
+      --accent-pink: #ec4899;
+      --accent-amber: #f59e0b;
+      --accent-teal: #06b6d4;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --border: #1e2d4a;
+      --code-bg: #0d1117;
+      --gradient-hero: linear-gradient(135deg, #f97316 0%, #ec4899 50%, #8b5cf6 100%);
+      --shadow-glow: 0 0 30px rgba(249,115,22,0.12);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text-primary); line-height: 1.7; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-primary); }
+    ::-webkit-scrollbar-thumb { background: var(--accent-orange); border-radius: 3px; }
+
+    /* ── Hero ── */
+    .hero { position: relative; padding: 80px 24px 60px; text-align: center; overflow: hidden; }
+    .hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(249,115,22,0.1) 0%, transparent 70%),
+                  radial-gradient(ellipse 40% 40% at 80% 100%, rgba(139,92,246,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(249,115,22,0.1); border: 1px solid rgba(249,115,22,0.3); border-radius: 99px; padding: 6px 18px; font-size: 13px; color: var(--accent-orange); margin-bottom: 28px; font-weight: 500; letter-spacing: 0.05em; }
+    .hero h1 { font-size: clamp(2.2rem, 5vw, 3.8rem); font-weight: 800; background: var(--gradient-hero); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.15; margin-bottom: 16px; }
+    .hero p { font-size: 1.1rem; color: var(--text-secondary); max-width: 680px; margin: 0 auto 36px; }
+    .hero-stats { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; }
+    .stat { text-align: center; }
+    .stat-num { font-size: 2rem; font-weight: 800; background: var(--gradient-hero); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .stat-label { font-size: 0.78rem; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 2px; }
+
+    /* ── Nav ── */
+    .nav-bar { position: sticky; top: 0; z-index: 100; background: rgba(8,13,26,0.88); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); padding: 0 24px; display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+    .nav-bar::-webkit-scrollbar { display: none; }
+    .nav-link { white-space: nowrap; padding: 14px 16px; font-size: 13px; font-weight: 500; color: var(--text-muted); text-decoration: none; border-bottom: 2px solid transparent; transition: all 0.2s; }
+    .nav-link:hover { color: var(--accent-orange); border-bottom-color: var(--accent-orange); }
+
+    /* ── Layout ── */
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px 80px; }
+    .section { margin-top: 72px; }
+    .section-header { display: flex; align-items: center; gap: 14px; margin-bottom: 32px; }
+    .section-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+    .section-title { font-size: 1.55rem; font-weight: 700; }
+    .section-subtitle { font-size: 0.88rem; color: var(--text-muted); margin-top: 2px; }
+
+    /* ── Cards ── */
+    .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 28px 32px; margin-bottom: 20px; transition: all 0.25s; position: relative; overflow: hidden; }
+    .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; opacity: 0; transition: opacity 0.25s; }
+    .card:hover { border-color: rgba(249,115,22,0.3); box-shadow: var(--shadow-glow); transform: translateY(-2px); }
+    .card:hover::before { opacity: 1; background: var(--gradient-hero); }
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 20px; }
+
+    /* ── Q&A ── */
+    .qa-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; margin-bottom: 16px; overflow: hidden; transition: border-color 0.2s; }
+    .qa-item:hover { border-color: rgba(249,115,22,0.25); }
+    .qa-question { padding: 20px 28px; cursor: pointer; display: flex; align-items: center; gap: 16px; font-weight: 600; font-size: 0.97rem; user-select: none; transition: background 0.2s; }
+    .qa-question:hover { background: rgba(249,115,22,0.04); }
+    .qa-question.open { color: var(--accent-orange); }
+    .q-num { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--accent-orange); background: rgba(249,115,22,0.1); border-radius: 6px; padding: 3px 8px; flex-shrink: 0; }
+    .chevron { margin-left: auto; transition: transform 0.3s; color: var(--text-muted); font-size: 12px; flex-shrink: 0; }
+    .chevron.open { transform: rotate(180deg); color: var(--accent-orange); }
+    .qa-answer { display: none; padding: 0 28px 24px; color: var(--text-secondary); font-size: 0.93rem; border-top: 1px solid var(--border); animation: fadeDown 0.2s ease; }
+    .qa-answer.show { display: block; }
+    .qa-answer p { margin-top: 16px; }
+    .qa-answer ul { margin-top: 12px; padding-left: 20px; }
+    .qa-answer li { margin-bottom: 8px; }
+    .qa-answer strong { color: var(--text-primary); }
+    @keyframes fadeDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ── Code ── */
+    .code-block { background: var(--code-bg); border: 1px solid #1e2d4a; border-radius: 12px; padding: 20px 24px; margin: 16px 0; overflow-x: auto; position: relative; }
+    .code-block pre { font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; line-height: 1.7; color: #e2e8f0; white-space: pre; }
+    .code-label { position: absolute; top: 12px; right: 16px; font-size: 0.68rem; font-family: 'JetBrains Mono', monospace; color: var(--text-muted); background: rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 4px; }
+    .kw { color: #c792ea; } .fn { color: #82aaff; } .str { color: #c3e88d; } .cm { color: #546e7a; font-style: italic; } .num { color: #f78c6c; } .cls { color: #ffcb6b; } .dec { color: #f97316; }
+
+    /* ── Tags ── */
+    .tag { display: inline-block; padding: 3px 10px; border-radius: 99px; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.04em; }
+    .tag-orange { background: rgba(249,115,22,0.12); color: var(--accent-orange); border: 1px solid rgba(249,115,22,0.3); }
+    .tag-blue { background: rgba(59,130,246,0.12); color: var(--accent-blue); border: 1px solid rgba(59,130,246,0.3); }
+    .tag-purple { background: rgba(139,92,246,0.12); color: var(--accent-purple); border: 1px solid rgba(139,92,246,0.3); }
+    .tag-green { background: rgba(16,185,129,0.12); color: var(--accent-green); border: 1px solid rgba(16,185,129,0.3); }
+    .tag-teal { background: rgba(6,182,212,0.12); color: var(--accent-teal); border: 1px solid rgba(6,182,212,0.3); }
+    .tag-pink { background: rgba(236,72,153,0.12); color: var(--accent-pink); border: 1px solid rgba(236,72,153,0.3); }
+
+    /* ── Arch flow ── */
+    .arch-flow { display: flex; align-items: center; gap: 0; flex-wrap: wrap; justify-content: center; padding: 28px 0; }
+    .arch-node { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; text-align: center; min-width: 110px; transition: all 0.25s; }
+    .arch-node:hover { border-color: var(--accent-orange); box-shadow: var(--shadow-glow); }
+    .arch-node-icon { font-size: 22px; margin-bottom: 6px; }
+    .arch-node-label { font-size: 0.78rem; font-weight: 600; }
+    .arch-node-sub { font-size: 0.68rem; color: var(--text-muted); margin-top: 2px; }
+    .arch-arrow { font-size: 22px; color: var(--accent-orange); margin: 0 4px; opacity: 0.7; }
+
+    /* ── Highlight boxes ── */
+    .highlight-box { border-radius: 12px; padding: 18px 22px; margin: 16px 0; display: flex; gap: 14px; align-items: flex-start; }
+    .hl-tip { background: rgba(249,115,22,0.06); border: 1px solid rgba(249,115,22,0.2); }
+    .hl-warn { background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.2); }
+    .hl-info { background: rgba(59,130,246,0.06); border: 1px solid rgba(59,130,246,0.2); }
+    .hl-green { background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.2); }
+    .hl-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+    .hl-content { font-size: 0.9rem; color: var(--text-secondary); }
+    .hl-content strong { color: var(--text-primary); display: block; margin-bottom: 4px; }
+
+    /* ── Checklist ── */
+    .checklist { list-style: none; }
+    .checklist li { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid rgba(30,45,74,0.4); font-size: 0.9rem; color: var(--text-secondary); }
+    .checklist li:last-child { border-bottom: none; }
+    .check-icon { color: var(--accent-orange); flex-shrink: 0; margin-top: 2px; }
+
+    /* ── Two col ── */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } .arch-flow { flex-direction: column; } }
+
+    /* ── Skill bars ── */
+    .skill-row { margin-bottom: 14px; }
+    .skill-top { display: flex; justify-content: space-between; font-size: 0.84rem; margin-bottom: 6px; }
+    .skill-label { color: var(--text-secondary); font-weight: 500; }
+    .skill-pct { color: var(--text-muted); font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; }
+    .skill-bar { height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; }
+    .skill-fill { height: 100%; border-radius: 3px; }
+
+    /* ── Print btn ── */
+    .print-btn { position: fixed; bottom: 32px; right: 32px; background: var(--gradient-hero); color: #fff; border: none; border-radius: 50px; padding: 14px 26px; font-weight: 700; font-size: 0.88rem; cursor: pointer; box-shadow: 0 8px 32px rgba(249,115,22,0.35); transition: all 0.2s; z-index: 200; display: flex; align-items: center; gap: 8px; }
+    .print-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(249,115,22,0.5); }
+
+    /* ── Misc ── */
+    .divider { height: 1px; background: var(--border); margin: 48px 0; }
+    code { font-family: 'JetBrains Mono', monospace; background: rgba(249,115,22,0.08); color: var(--accent-orange); padding: 2px 7px; border-radius: 5px; font-size: 0.82em; }
+
+    /* ── Print ── */
+    @media print {
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      body { background: #fff !important; color: #0f172a !important; font-size: 11pt; }
+      .print-btn, .nav-bar { display: none !important; }
+      .hero { background: #fff !important; padding: 24pt 0 16pt; }
+      .hero::before { display: none; }
+      .hero h1 { font-size: 24pt !important; -webkit-text-fill-color: #0f172a !important; color: #0f172a !important; background: none !important; }
+      .hero p, .hero-badge { color: #334155 !important; }
+      .stat-num { -webkit-text-fill-color: #ea580c !important; color: #ea580c !important; background: none !important; }
+      .card { background: #f8fafc !important; border: 1px solid #cbd5e1 !important; break-inside: avoid; box-shadow: none !important; page-break-inside: avoid; margin-bottom: 12pt; }
+      .card::before { display: none !important; }
+      .section-title { color: #0f172a !important; }
+      .qa-item { border: 1px solid #cbd5e1 !important; break-inside: avoid; page-break-inside: avoid; }
+      .qa-question { color: #0f172a !important; background: #f1f5f9 !important; }
+      .qa-answer { display: block !important; color: #334155 !important; border-top: 1px solid #cbd5e1 !important; }
+      .qa-answer strong { color: #0f172a !important; }
+      .chevron { display: none !important; }
+      .code-block { background: #f1f5f9 !important; border: 1px solid #cbd5e1 !important; break-inside: avoid; }
+      .code-block pre { color: #0f172a !important; font-size: 8pt; }
+      .hl-tip { background: #fff7ed !important; border-color: #ea580c !important; }
+      .hl-warn { background: #fef3c7 !important; border-color: #b45309 !important; }
+      .hl-info { background: #dbeafe !important; border-color: #1d4ed8 !important; }
+      .hl-green { background: #d1fae5 !important; border-color: #047857 !important; }
+      .hl-content { color: #334155 !important; }
+      .hl-content strong { color: #0f172a !important; display: block; margin-bottom: 4px; }
+      .arch-node { background: #f8fafc !important; border: 1px solid #cbd5e1 !important; }
+      .divider { background: #cbd5e1 !important; }
+      code { background: #fff7ed !important; color: #ea580c !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Hero ── -->
+<section class="hero">
+  <div class="hero-badge">👥 Group Project · Your Role: YOLOv8 &amp; NLP</div>
+  <h1>IMPACT<br />Interview Prep Guide</h1>
+  <p>Intelligent Municipal Action &amp; City Triage — a full-stack AI civic platform. Your ownership was the <strong>computer vision (YOLOv8) garbage detection</strong> and the <strong>NLP complaint triage</strong> models.</p>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-num">2</div><div class="stat-label">AI Models You Built</div></div>
+    <div class="stat"><div class="stat-num">3</div><div class="stat-label">User Roles</div></div>
+    <div class="stat"><div class="stat-num">4</div><div class="stat-num-sub"></div><div class="stat-label">Tech Layers</div></div>
+    <div class="stat"><div class="stat-num">2</div><div class="stat-label">ML Endpoints</div></div>
+  </div>
+</section>
+
+<!-- ── Nav ── -->
+<nav class="nav-bar">
+  <a class="nav-link" href="#overview">Overview</a>
+  <a class="nav-link" href="#your-role">Your Role</a>
+  <a class="nav-link" href="#yolo">YOLOv8</a>
+  <a class="nav-link" href="#nlp">NLP</a>
+  <a class="nav-link" href="#mlserver">ML Server</a>
+  <a class="nav-link" href="#architecture">Architecture</a>
+  <a class="nav-link" href="#qa-general">General Q&amp;A</a>
+  <a class="nav-link" href="#qa-yolo">YOLO Q&amp;A</a>
+  <a class="nav-link" href="#qa-nlp">NLP Q&amp;A</a>
+  <a class="nav-link" href="#cheatsheet">Cheatsheet</a>
+</nav>
+
+<div class="container">
+
+  <!-- ══ 1. OVERVIEW ══ -->
+  <section class="section" id="overview">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(249,115,22,0.1);">🏙️</div>
+      <div>
+        <div class="section-title">Project Overview</div>
+        <div class="section-subtitle">EPICS academic project · MERN stack + Python ML</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="color:var(--accent-orange);margin-bottom:12px;">Elevator Pitch (30 seconds)</h3>
+      <p style="color:var(--text-secondary);font-size:1.02rem;line-height:1.8;">
+        <em>"IMPACT is a full-stack civic complaint management platform we built as a group project. It lets citizens file municipal complaints, track resolution status, pay traffic challans, and view ward maps — with AI automatically triaging complaints. <strong style="color:var(--text-primary)">My contribution was the entire AI/ML layer</strong> — I trained a YOLOv8 model to detect garbage in uploaded images, and built TF-IDF NLP models to auto-classify complaint category and severity. Both run as a Flask microservice that the Node.js backend spawns automatically."</em>
+      </p>
+      <div class="highlight-box hl-info" style="margin-top:16px;">
+        <div class="hl-icon">💡</div>
+        <div class="hl-content"><strong>Tip:</strong> Say "we built" for the platform, then immediately pivot to "my specific contribution was the AI/ML layer — the YOLOv8 and NLP models." Own your domain completely.</div>
+      </div>
+    </div>
+
+    <div class="card" style="border-color:rgba(249,115,22,0.35);background:rgba(249,115,22,0.03);">
+      <h4 style="color:var(--accent-orange);margin-bottom:16px;">👥 Team Structure — Know This Cold</h4>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;">
+        <div style="background:var(--bg-card);border:1px solid rgba(249,115,22,0.3);border-radius:10px;padding:16px;">
+          <div style="font-size:20px;margin-bottom:6px;">🤖</div>
+          <div style="font-weight:700;color:var(--accent-orange);font-size:0.88rem;">YOU — AI / ML</div>
+          <p style="color:var(--text-secondary);font-size:0.8rem;margin-top:6px;">YOLOv8 garbage detection model training, NLP TF-IDF category + severity classifiers, Flask ML microservice (<code>app.py</code>), model artifacts</p>
+        </div>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:16px;">
+          <div style="font-size:20px;margin-bottom:6px;">⚙️</div>
+          <div style="font-weight:700;color:var(--text-secondary);font-size:0.88rem;">Teammates — Backend</div>
+          <p style="color:var(--text-muted);font-size:0.8rem;margin-top:6px;">Express.js API, MongoDB schemas, JWT auth middleware, RBAC, challan/complaint controllers, ML server auto-spawn</p>
+        </div>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:16px;">
+          <div style="font-size:20px;margin-bottom:6px;">🎨</div>
+          <div style="font-weight:700;color:var(--text-secondary);font-size:0.88rem;">Teammates — Frontend</div>
+          <p style="color:var(--text-muted);font-size:0.8rem;margin-top:6px;">React + Vite UI, Tailwind CSS, Framer Motion animations, citizen/officer dashboards, complaint filing form</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-grid">
+      <div class="card">
+        <h4 style="color:var(--accent-blue);margin-bottom:12px;">🎯 Problem Statement</h4>
+        <p style="color:var(--text-secondary);font-size:0.9rem;">Municipal complaint systems are manual, slow, and opaque. Citizens have no visibility into resolution, officers are flooded with unclassified reports, and there's no evidence-based triage. IMPACT digitalizes the full grievance lifecycle with AI-powered prioritization.</p>
+      </div>
+      <div class="card">
+        <h4 style="color:var(--accent-purple);margin-bottom:12px;">🛠 Full Tech Stack</h4>
+        <ul style="color:var(--text-secondary);font-size:0.85rem;padding-left:16px;margin-top:4px;">
+          <li><strong style="color:var(--accent-orange);">Your part:</strong> Python, Flask, YOLOv8 (ultralytics), scikit-learn, joblib, Pillow</li>
+          <li>Frontend: React 19, Vite, Tailwind CSS 4, Framer Motion</li>
+          <li>Backend: Node.js, Express.js 5, MongoDB Atlas, Mongoose, JWT</li>
+          <li>Infra: Render, Vercel, Google Maps Embed, Google News RSS</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4 style="color:var(--accent-green);margin-bottom:12px;">👤 Three User Roles</h4>
+        <ul style="color:var(--text-secondary);font-size:0.88rem;padding-left:16px;margin-top:4px;">
+          <li><strong>Citizen</strong> — file complaints, track status, pay challans, view ward map</li>
+          <li><strong>Municipal Officer</strong> — assign, reassign, resolve dept complaints</li>
+          <li><strong>Traffic Police</strong> — issue E-Challans only (task board hidden)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4 style="color:var(--accent-teal);margin-bottom:12px;">🤖 AI Features (Your Work)</h4>
+        <ul style="color:var(--text-secondary);font-size:0.88rem;padding-left:16px;margin-top:4px;">
+          <li><strong>YOLOv8</strong> — detects garbage/waste in complaint photos, returns bounding boxes + confidence scores</li>
+          <li><strong>TF-IDF + Classifier</strong> — reads complaint text, auto-fills category and severity</li>
+          <li><strong>Flask microservice</strong> — serves both on port 8000, auto-spawned by Node.js</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 2. YOUR ROLE ══ -->
+  <section class="section" id="your-role">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(249,115,22,0.1);">🎯</div>
+      <div>
+        <div class="section-title">Your Contribution — Deep Dive</div>
+        <div class="section-subtitle">Everything you personally built</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <h4 style="color:var(--accent-orange);margin-bottom:14px;">📁 Files You Own</h4>
+        <ul class="checklist">
+          <li><span class="check-icon">✦</span><code>ml-server/app.py</code> — Flask API with both ML endpoints</li>
+          <li><span class="check-icon">✦</span><code>ML Model/best (1).pt</code> — YOLOv8 trained weights (22MB)</li>
+          <li><span class="check-icon">✦</span><code>ML Model/tfidf_vectorizer.pkl</code> — fitted TF-IDF (25KB)</li>
+          <li><span class="check-icon">✦</span><code>ML Model/category_model.pkl</code> — complaint category classifier (26KB)</li>
+          <li><span class="check-icon">✦</span><code>ML Model/severity_model.pkl</code> — severity classifier (2MB)</li>
+          <li><span class="check-icon">✦</span><code>ML Model/EPICS.ipynb</code> — YOLOv8 training notebook</li>
+          <li><span class="check-icon">✦</span><code>ML Model/nlp.ipynb</code> — NLP training notebook</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4 style="color:var(--accent-purple);margin-bottom:14px;">🔗 How Your ML Connects to the App</h4>
+        <ul class="checklist">
+          <li><span class="check-icon">→</span>User uploads photo + types description in complaint form</li>
+          <li><span class="check-icon">→</span>React sends both to Express <code>/api/complaints</code></li>
+          <li><span class="check-icon">→</span>Express calls your Flask server: <code>POST /api/ml/analyze-text</code> and <code>POST /api/ml/analyze-image</code></li>
+          <li><span class="check-icon">→</span>Your models return category, severity, and detected garbage objects</li>
+          <li><span class="check-icon">→</span>Results auto-fill the complaint form — citizen sees AI suggestions before submitting</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 3. YOLO ══ -->
+  <section class="section" id="yolo">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(236,72,153,0.1);">📷</div>
+      <div>
+        <div class="section-title">YOLOv8 — Garbage Detection</div>
+        <div class="section-subtitle">Computer vision model you trained for waste detection in municipal photos</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h4 style="color:var(--accent-pink);margin-bottom:16px;">What YOLO Does in This Project</h4>
+      <div class="arch-flow">
+        <div class="arch-node"><div class="arch-node-icon">📸</div><div class="arch-node-label">Complaint Photo</div><div class="arch-node-sub">base64 encoded</div></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node"><div class="arch-node-icon">🔓</div><div class="arch-node-label">base64 decode</div><div class="arch-node-sub">PIL Image</div></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node"><div class="arch-node-icon">🤖</div><div class="arch-node-label">YOLOv8 Infer</div><div class="arch-node-sub">best (1).pt</div></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node"><div class="arch-node-icon">📦</div><div class="arch-node-label">Bounding Boxes</div><div class="arch-node-sub">class + confidence</div></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node"><div class="arch-node-icon">📤</div><div class="arch-node-label">JSON Response</div><div class="arch-node-sub">detections + summary</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h4 style="color:var(--accent-orange);margin-bottom:14px;">Inference Code — Exact Logic</h4>
+      <div class="code-block">
+        <div class="code-label">ml-server/app.py</div>
+        <pre>
+<span class="dec">@app.route</span>(<span class="str">"/api/ml/analyze-image"</span>, methods=[<span class="str">"POST"</span>])
+<span class="kw">def</span> <span class="fn">analyze_image</span>():
+    data = request.json
+    img_str = data.<span class="fn">get</span>(<span class="str">"image"</span>, <span class="str">""</span>)
+
+    <span class="cm"># 1. Strip data URI prefix if present</span>
+    <span class="kw">if</span> <span class="str">"base64,"</span> <span class="kw">in</span> img_str:
+        img_str = img_str.<span class="fn">split</span>(<span class="str">"base64,"</span>)[<span class="num">1</span>]
+
+    <span class="cm"># 2. Decode base64 → PIL Image</span>
+    img_data = base64.<span class="fn">b64decode</span>(img_str)
+    img = Image.<span class="fn">open</span>(io.<span class="fn">BytesIO</span>(img_data))
+
+    <span class="cm"># 3. Run YOLOv8 inference</span>
+    results = yolo_model(img)
+
+    <span class="cm"># 4. Extract bounding box class names + confidence scores</span>
+    detections = []
+    <span class="kw">for</span> r <span class="kw">in</span> results:
+        <span class="kw">for</span> box <span class="kw">in</span> r.boxes:
+            cls_id  = <span class="fn">int</span>(box.cls[<span class="num">0</span>].<span class="fn">item</span>())
+            conf    = <span class="fn">float</span>(box.conf[<span class="num">0</span>].<span class="fn">item</span>())
+            cls_name = yolo_model.names[cls_id]
+            detections.<span class="fn">append</span>({<span class="str">"class"</span>: cls_name, <span class="str">"confidence"</span>: <span class="fn">round</span>(conf, <span class="num">2</span>)})
+
+    unique_classes = <span class="fn">list</span>(<span class="fn">set</span>([d[<span class="str">'class'</span>] <span class="kw">for</span> d <span class="kw">in</span> detections]))
+    <span class="kw">return</span> <span class="fn">jsonify</span>({<span class="str">"detections"</span>: detections, <span class="str">"summary"</span>: <span class="str">", "</span>.<span class="fn">join</span>(unique_classes)})</pre>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <h4 style="color:var(--accent-blue);margin-bottom:14px;">What is YOLOv8?</h4>
+        <p style="color:var(--text-secondary);font-size:0.88rem;margin-bottom:10px;"><strong style="color:var(--text-primary);">YOLO = You Only Look Once.</strong> A single-stage real-time object detection architecture.</p>
+        <ul class="checklist">
+          <li><span class="check-icon">✦</span>Divides image into a grid; each cell predicts bounding boxes + class probabilities simultaneously</li>
+          <li><span class="check-icon">✦</span>Single forward pass — much faster than two-stage detectors (R-CNN family)</li>
+          <li><span class="check-icon">✦</span>YOLOv8 (Ultralytics) is the state-of-the-art version — anchor-free, better small object detection</li>
+          <li><span class="check-icon">✦</span>Output: bounding box coords (x, y, w, h) + class label + confidence score per detected object</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4 style="color:var(--accent-green);margin-bottom:14px;">Training Details</h4>
+        <ul class="checklist">
+          <li><span class="check-icon">✦</span>Model: <code>best (1).pt</code> — custom trained weights (22MB)</li>
+          <li><span class="check-icon">✦</span>Task: object detection on garbage/waste classes</li>
+          <li><span class="check-icon">✦</span>Framework: <code>ultralytics</code> Python package</li>
+          <li><span class="check-icon">✦</span>Training done in <code>EPICS.ipynb</code> notebook</li>
+          <li><span class="check-icon">✦</span>Input: photos uploaded by citizens as part of complaint filing</li>
+          <li><span class="check-icon">✦</span>Output: list of detected garbage types with confidence % per detection</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="highlight-box hl-tip">
+      <div class="hl-icon">🔑</div>
+      <div class="hl-content">
+        <strong>Key interview answer — "why YOLO and not a CNN classifier?"</strong>
+        "A simple CNN image classifier would only tell us <em>is there garbage?</em> (yes/no). YOLOv8 gives us <em>where</em> the garbage is (bounding boxes) and <em>how many</em> objects are detected — which is more useful for a municipal officer assessing severity. Multiple detections with high confidence = higher priority complaint."
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 4. NLP ══ -->
+  <section class="section" id="nlp">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(59,130,246,0.1);">🧠</div>
+      <div>
+        <div class="section-title">NLP — Complaint Triage</div>
+        <div class="section-subtitle">TF-IDF + classifiers to auto-detect category and severity from text</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h4 style="color:var(--accent-blue);margin-bottom:16px;">NLP Pipeline Flow</h4>
+      <div class="arch-flow">
+        <div class="arch-node"><div class="arch-node-icon">📝</div><div class="arch-node-label">Complaint Text</div><div class="arch-node-sub">"water pipe broken near..."</div></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node"><div class="arch-node-icon">🔢</div><div class="arch-node-label">TF-IDF</div><div class="arch-node-sub">tfidf_vectorizer.pkl</div></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node"><div class="arch-node-icon">🏷️</div><div class="arch-node-label">Category Model</div><div class="arch-node-sub">Water / Roads / ...</div></div>
+        <div class="arch-arrow" style="opacity:0;">→</div>
+        <div class="arch-node"><div class="arch-node-icon">🚨</div><div class="arch-node-label">Severity Model</div><div class="arch-node-sub">High / Med / Low</div></div>
+      </div>
+      <p style="color:var(--text-muted);font-size:0.82rem;text-align:center;margin-top:-10px;">Both Category and Severity models share the same TF-IDF vectorized input</p>
+    </div>
+
+    <div class="card">
+      <h4 style="color:var(--accent-teal);margin-bottom:14px;">Inference Code — Exact Logic</h4>
+      <div class="code-block">
+        <div class="code-label">ml-server/app.py</div>
+        <pre>
+<span class="cm"># Models loaded once at startup (global scope)</span>
+vectorizer = joblib.<span class="fn">load</span>(os.path.<span class="fn">join</span>(MODEL_DIR, <span class="str">'tfidf_vectorizer.pkl'</span>))
+cat_model  = joblib.<span class="fn">load</span>(os.path.<span class="fn">join</span>(MODEL_DIR, <span class="str">'category_model.pkl'</span>))
+sev_model  = joblib.<span class="fn">load</span>(os.path.<span class="fn">join</span>(MODEL_DIR, <span class="str">'severity_model.pkl'</span>))
+
+<span class="dec">@app.route</span>(<span class="str">"/api/ml/analyze-text"</span>, methods=[<span class="str">"POST"</span>])
+<span class="kw">def</span> <span class="fn">analyze_text</span>():
+    text = request.json.<span class="fn">get</span>(<span class="str">"text"</span>, <span class="str">""</span>)
+    <span class="kw">if not</span> text.<span class="fn">strip</span>():
+        <span class="kw">return</span> <span class="fn">jsonify</span>({<span class="str">"category"</span>: <span class="str">""</span>, <span class="str">"severity"</span>: <span class="str">""</span>})
+
+    <span class="cm"># 1. Vectorize text using fitted TF-IDF</span>
+    vec = vectorizer.<span class="fn">transform</span>([text])   <span class="cm"># sparse matrix (1, n_features)</span>
+
+    <span class="cm"># 2. Two separate classifiers share same vectorized input</span>
+    cat = cat_model.<span class="fn">predict</span>(vec)[<span class="num">0</span>]    <span class="cm"># e.g. "Water", "Roads", "Sanitation"</span>
+    sev = sev_model.<span class="fn">predict</span>(vec)[<span class="num">0</span>]    <span class="cm"># e.g. "High", "Medium", "Low"</span>
+
+    <span class="kw">return</span> <span class="fn">jsonify</span>({<span class="str">"category"</span>: cat, <span class="str">"severity"</span>: sev})</pre>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <h4 style="color:var(--accent-purple);margin-bottom:14px;">What is TF-IDF?</h4>
+        <p style="color:var(--text-secondary);font-size:0.88rem;margin-bottom:12px;"><strong style="color:var(--text-primary);">TF-IDF = Term Frequency × Inverse Document Frequency.</strong> Converts text into a numerical vector.</p>
+        <ul class="checklist">
+          <li><span class="check-icon">✦</span><strong>TF</strong> — how often a word appears in this document</li>
+          <li><span class="check-icon">✦</span><strong>IDF</strong> — penalizes words that appear in many documents (common words like "the", "is" get low weight)</li>
+          <li><span class="check-icon">✦</span>Result: unique, informative words like "pothole", "sewage", "leakage" get high scores</li>
+          <li><span class="check-icon">✦</span><code>vectorizer.transform()</code> at inference — uses <em>already-fitted</em> vocabulary, no retraining</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4 style="color:var(--accent-amber);margin-bottom:14px;">Model Artifacts</h4>
+        <ul class="checklist">
+          <li><span class="check-icon">✦</span><code>tfidf_vectorizer.pkl</code> — 25KB, fitted vocabulary + IDF weights</li>
+          <li><span class="check-icon">✦</span><code>category_model.pkl</code> — 26KB, classifies into department categories (Water, Roads, Sanitation, Electricity, etc.)</li>
+          <li><span class="check-icon">✦</span><code>severity_model.pkl</code> — 2MB (larger = more complex model), classifies into High / Medium / Low</li>
+          <li><span class="check-icon">✦</span>Serialized with <code>joblib</code> (preferred over pickle for sklearn — better compression for large arrays)</li>
+          <li><span class="check-icon">✦</span>Training done in <code>nlp.ipynb</code> notebook</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="highlight-box hl-info">
+      <div class="hl-icon">💡</div>
+      <div class="hl-content">
+        <strong>Why two separate models (category + severity) instead of one multi-output model?</strong>
+        "Category and severity are two independent classification tasks with different label spaces. Training them separately keeps each model focused — the severity model can be a more complex algorithm (hence its 2MB size vs 26KB category model) without affecting category performance. It also makes them independently replaceable."
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 5. ML SERVER ══ -->
+  <section class="section" id="mlserver">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(16,185,129,0.1);">🌐</div>
+      <div>
+        <div class="section-title">Flask ML Microservice</div>
+        <div class="section-subtitle">The server you built that connects your models to the Node.js backend</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <h4 style="color:var(--accent-green);margin-bottom:14px;">Your Two Endpoints</h4>
+        <ul class="checklist">
+          <li><span class="check-icon">→</span><code>POST /api/ml/analyze-text</code><br/><span style="font-size:0.8rem;color:var(--text-muted);">Input: <code>{"text": "..."}</code> → Output: <code>{"category": "Water", "severity": "High"}</code></span></li>
+          <li><span class="check-icon">→</span><code>POST /api/ml/analyze-image</code><br/><span style="font-size:0.8rem;color:var(--text-muted);">Input: <code>{"image": "base64..."}</code> → Output: <code>{"detections": [...], "summary": "garbage"}</code></span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4 style="color:var(--accent-orange);margin-bottom:14px;">Auto-Spawn by Node.js</h4>
+        <p style="color:var(--text-secondary);font-size:0.88rem;margin-bottom:10px;">The Node.js server auto-starts your Flask server — no separate terminal needed:</p>
+        <div class="code-block" style="margin:0;">
+          <div class="code-label">server.js</div>
+          <pre style="font-size:0.78rem;">
+<span class="kw">const</span> mlServer = <span class="fn">spawn</span>(
+  <span class="str">`"${venvPython}"`</span>,
+  [<span class="str">'app.py'</span>],
+  { cwd: mlDir, shell: <span class="kw">true</span> }
+);</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h4 style="color:var(--accent-purple);margin-bottom:14px;">Model Loading Strategy — Startup vs Per-Request</h4>
+      <p style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:14px;">All four models are loaded <strong style="color:var(--text-primary);">once at startup</strong> in global scope — not on every request. This is critical for performance:</p>
+      <div class="code-block">
+        <div class="code-label">app.py — startup loading</div>
+        <pre>
+<span class="cm"># Loaded ONCE when Flask starts — global scope</span>
+MODEL_DIR  = os.path.<span class="fn">join</span>(os.path.<span class="fn">dirname</span>(os.path.<span class="fn">dirname</span>(__file__)), <span class="str">"ML Model"</span>)
+vectorizer = joblib.<span class="fn">load</span>(os.path.<span class="fn">join</span>(MODEL_DIR, <span class="str">'tfidf_vectorizer.pkl'</span>))
+cat_model  = joblib.<span class="fn">load</span>(os.path.<span class="fn">join</span>(MODEL_DIR, <span class="str">'category_model.pkl'</span>))
+sev_model  = joblib.<span class="fn">load</span>(os.path.<span class="fn">join</span>(MODEL_DIR, <span class="str">'severity_model.pkl'</span>))
+yolo_model = <span class="cls">YOLO</span>(os.path.<span class="fn">join</span>(MODEL_DIR, <span class="str">'best (1).pt'</span>))
+
+<span class="cm"># At inference — just call .transform() and .predict(), no reloading</span></pre>
+      </div>
+      <div class="highlight-box hl-warn" style="margin-top:0;">
+        <div class="hl-icon">⚡</div>
+        <div class="hl-content"><strong>Why not load per-request?</strong> joblib.load and YOLO weight loading takes 1–5 seconds. Loading on every request would make the app unusable. Global scope = loaded once, inference is milliseconds.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 6. ARCHITECTURE ══ -->
+  <section class="section" id="architecture">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(139,92,246,0.1);">🏗️</div>
+      <div>
+        <div class="section-title">System Architecture</div>
+        <div class="section-subtitle">How all four layers fit together</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h4 style="color:var(--text-secondary);font-size:0.78rem;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:20px;">Full Request Flow — Complaint Filing with AI</h4>
+      <div class="arch-flow">
+        <div class="arch-node"><div class="arch-node-icon">🧑</div><div class="arch-node-label">Citizen</div><div class="arch-node-sub">React UI port 5173</div></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node"><div class="arch-node-icon">⚙️</div><div class="arch-node-label">Express API</div><div class="arch-node-sub">Node.js port 5000</div></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node" style="border-color:rgba(249,115,22,0.4);"><div class="arch-node-icon">🤖</div><div class="arch-node-label" style="color:var(--accent-orange);">Flask ML</div><div class="arch-node-sub">YOUR server port 8000</div></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node" style="border-color:rgba(249,115,22,0.4);"><div class="arch-node-icon">🔬</div><div class="arch-node-label" style="color:var(--accent-orange);">YOLO + NLP</div><div class="arch-node-sub">YOUR models</div></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node"><div class="arch-node-icon">🍃</div><div class="arch-node-label">MongoDB Atlas</div><div class="arch-node-sub">complaint saved</div></div>
+      </div>
+      <div class="highlight-box hl-tip" style="margin-top:8px;">
+        <div class="hl-icon">🎯</div>
+        <div class="hl-content"><strong>Your server is at the heart of every AI interaction.</strong> Every complaint filed passes through your Flask endpoints before being saved to the database.</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <h4 style="color:var(--accent-blue);margin-bottom:14px;">Ports at a Glance</h4>
+        <ul class="checklist">
+          <li><span class="check-icon">→</span><strong>5173</strong> — React frontend (Vite dev server)</li>
+          <li><span class="check-icon">→</span><strong>5000</strong> — Express.js REST API (Node.js)</li>
+          <li><span class="check-icon" style="color:var(--accent-orange);">→</span><strong style="color:var(--accent-orange);">8000</strong> — <strong style="color:var(--accent-orange);">Your Flask ML server</strong></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4 style="color:var(--accent-purple);margin-bottom:14px;">MongoDB Collections</h4>
+        <ul class="checklist">
+          <li><span class="check-icon">✦</span><code>users</code> — citizen profiles, notifications</li>
+          <li><span class="check-icon">✦</span><code>officers</code> — municipal staff + department</li>
+          <li><span class="check-icon" style="color:var(--accent-orange);">✦</span><code>complaints</code> — stores AI-predicted <code>category</code> + <code>priority</code></li>
+          <li><span class="check-icon">✦</span><code>challans</code> — traffic violations + payment status</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ══ 7. GENERAL Q&A ══ -->
+  <section class="section" id="qa-general">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(249,115,22,0.1);">💬</div>
+      <div>
+        <div class="section-title">General Interview Questions</div>
+        <div class="section-subtitle">Project framing, your role, and architecture decisions</div>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question" onclick="toggleQA(this)">
+        <span class="q-num">Q01</span>
+        Tell me about IMPACT and your role in it.
+        <span class="chevron">▼</span>
+      </div>
+      <div class="qa-answer">
+        <p><em>"IMPACT is a full-stack civic complaint management platform we built as a group EPICS project. It digitizes the entire municipal grievance lifecycle — citizens can file complaints with photo evidence, track resolution status, pay traffic challans, and view ward info with Google Maps integration. There are three user roles: citizens, municipal officers, and traffic police.</em></p>
+        <p><em>My contribution was the entire AI/ML layer. I trained a <strong>YOLOv8 model</strong> to detect garbage and waste objects in complaint photos, and built <strong>TF-IDF NLP classifiers</strong> that read the complaint text and automatically predict the complaint category (Water, Roads, Sanitation, etc.) and severity (High/Medium/Low). Both models are served through a Flask microservice I built that runs on port 8000 and is automatically spawned by our Node.js backend."</em></p>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question" onclick="toggleQA(this)">
+        <span class="q-num">Q02</span>
+        Why did you use a separate Flask server instead of running ML inside Node.js?
+        <span class="chevron">▼</span>
+      </div>
+      <div class="qa-answer">
+        <p>There are fundamental reasons why Python ML can't run inside Node.js:</p>
+        <ul>
+          <li><strong>Ecosystem mismatch:</strong> YOLOv8 (ultralytics) and scikit-learn are Python-only libraries. There's no JS equivalent with the same maturity, model compatibility, or performance.</li>
+          <li><strong>Process isolation:</strong> Running ML in a separate process means a crash in inference doesn't bring down the entire Node.js API server.</li>
+          <li><strong>Scalability:</strong> The ML server can be independently scaled or replaced — the Node.js backend only needs to know the API contract (POST endpoint + JSON schema).</li>
+          <li><strong>Auto-spawn convenience:</strong> We used Node's <code>spawn()</code> to start the Flask server automatically, so there's zero extra setup for anyone running the project.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question" onclick="toggleQA(this)">
+        <span class="q-num">Q03</span>
+        How does the auto-spawn of the Flask server work?
+        <span class="chevron">▼</span>
+      </div>
+      <div class="qa-answer">
+        <p>In <code>server/server.js</code>, when the Node.js server starts, it runs a <code>spawn()</code> call with the path to the Python venv and <code>app.py</code>:</p>
+        <ul>
+          <li>It locates the virtual environment's Python binary (cross-platform — Windows/Mac paths differ)</li>
+          <li>Spawns <code>python app.py</code> with the <code>ml-server/</code> directory as the working directory</li>
+          <li>The Flask server starts on port 8000 in the background</li>
+          <li>No developer needs to open a separate terminal — <code>npm run dev</code> starts everything: React (5173) + Express (5000) + Flask (8000)</li>
+          <li>This is the "Dev Experience" win — it makes the ML server feel like a native part of the Node stack</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question" onclick="toggleQA(this)">
+        <span class="q-num">Q04</span>
+        What would you improve in the ML layer if you had more time?
+        <span class="chevron">▼</span>
+      </div>
+      <div class="qa-answer">
+        <p>Focusing on the ML side specifically:</p>
+        <ul>
+          <li><strong>Confidence threshold for YOLO:</strong> Right now all detections are returned regardless of confidence. I'd add a threshold (e.g., conf > 0.5) to filter out low-confidence noisy detections before returning to the user.</li>
+          <li><strong>Return bounding box coordinates:</strong> The current response only returns class names and confidence, not the actual pixel coordinates. Returning coords would let the frontend draw boxes on the image.</li>
+          <li><strong>Severity model improvement:</strong> The severity model is 2MB (much larger than the 26KB category model) — suggesting it's more complex. I'd look at whether a lighter model (Logistic Regression + better features) achieves similar accuracy.</li>
+          <li><strong>Active learning pipeline:</strong> As officers correct AI-predicted categories, those corrections could feed back into retraining — improving accuracy over time without manual labeling.</li>
+          <li><strong>Async processing:</strong> Currently the ML call is synchronous in the complaint filing flow. I'd make it async so the complaint saves immediately and AI results update afterward.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 8. YOLO Q&A ══ -->
+  <section class="section" id="qa-yolo">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(236,72,153,0.1);">📷</div>
+      <div>
+        <div class="section-title">YOLOv8 Q&amp;A</div>
+        <div class="section-subtitle">Computer vision deep-dive questions</div>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question" onclick="toggleQA(this)">
+        <span class="q-num">Q05</span>
+        Explain how YOLO works. Why is it called "You Only Look Once"?
+        <span class="chevron">▼</span>
+      </div>
+      <div class="qa-answer">
+        <p>Traditional object detectors like R-CNN are two-stage: first propose regions of interest, then classify each region. YOLO is a single-stage detector:</p>
+        <ul>
+          <li><strong>Grid division:</strong> The image is divided into an S×S grid</li>
+          <li><strong>Single forward pass:</strong> Each grid cell simultaneously predicts bounding box coordinates (x, y, w, h), objectness score, and class probabilities — all in ONE pass through the neural network</li>
+          <li><strong>"Only Once":</strong> You look at the image once — one forward pass gives you all detections, instead of running the classifier hundreds of times on proposed regions</li>
+          <li><strong>YOLOv8 specifically:</strong> Anchor-free (no predefined box shapes), uses a CSP backbone, and has separate detection heads per scale for better small object detection</li>
+          <li><strong>Speed vs accuracy:</strong> YOLO trades some accuracy for massive speed gains — ideal for real-time applications like our complaint photo analysis</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question" onclick="toggleQA(this)">
+        <span class="q-num">Q06</span>
+        What is the <code>.pt</code> file? What does it contain?
+        <span class="chevron">▼</span>
+      </div>
+      <div class="qa-answer">
+        <ul>
+          <li><code>.pt</code> = PyTorch model file — the standard format for saving PyTorch neural network weights</li>
+          <li><strong>Contents:</strong> The trained neural network weights (all the learned parameters) + model architecture metadata</li>
+          <li><strong>best (1).pt</strong> — "best" is the convention YOLOv8 training uses for the checkpoint with the best validation mAP (mean Average Precision). It saves the best weights encountered during training, not just the last epoch's weights.</li>
+          <li><strong>Size — 22MB:</strong> This is a relatively small YOLO model — likely YOLOv8n (nano) or YOLOv8s (small) variant, optimized for speed over maximum accuracy. Appropriate for a web application where inference latency matters.</li>
+          <li><strong>Loading:</strong> <code>YOLO("best (1).pt")</code> from the ultralytics library loads the weights into memory ready for inference</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question" onclick="toggleQA(this)">
+        <span class="q-num">Q07</span>
+        What is mAP and how would you evaluate your YOLOv8 model?
+        <span class="chevron">▼</span>
+      </div>
+      <div class="qa-answer">
+        <p><strong>mAP = mean Average Precision</strong> — the standard metric for object detection models.</p>
+        <ul>
+          <li><strong>Precision:</strong> Of all boxes the model predicted as garbage, what fraction actually were garbage?</li>
+          <li><strong>Recall:</strong> Of all actual garbage in images, what fraction did the model find?</li>
+          <li><strong>IoU (Intersection over Union):</strong> Measures how well the predicted bounding box overlaps the ground truth box. A prediction counts as correct if IoU > threshold (e.g., 0.5)</li>
+          <li><strong>AP per class:</strong> Area under the Precision-Recall curve for each class</li>
+          <li><strong>mAP@0.5:</strong> Mean AP at IoU threshold 0.5 — the most common reported metric</li>
+          <li><strong>For our model:</strong> YOLOv8 training automatically generates a <code>results.csv</code> with mAP@0.5 and mAP@0.5:0.95 per epoch</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question" onclick="toggleQA(this)">
+        <span class="q-num">Q08</span>
+        How did you handle the base64 image input? Why base64?
+        <span class="chevron">▼</span>
+      </div>
+      <div class="qa-answer">
+        <ul>
+          <li><strong>Why base64:</strong> JSON can only transmit text. Images are binary data. base64 encodes binary as ASCII text, making it embeddable in a JSON payload. The frontend sends the photo as a base64 string inside the JSON body.</li>
+          <li><strong>Data URI prefix:</strong> When a browser reads a file with <code>FileReader.readAsDataURL()</code>, it prepends <code>data:image/jpeg;base64,</code>. My code strips this prefix before decoding: <code>img_str.split("base64,")[1]</code></li>
+          <li><strong>Decoding pipeline:</strong> <code>base64.b64decode()</code> → bytes → <code>io.BytesIO()</code> → <code>PIL.Image.open()</code> → PIL Image object → YOLO input</li>
+          <li><strong>Trade-off:</strong> base64 increases payload size by ~33% vs sending binary. For a civic complaint photo, this is acceptable. For high-volume production, you'd use multipart/form-data instead.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 9. NLP Q&A ══ -->
+  <section class="section" id="qa-nlp">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(59,130,246,0.1);">🧠</div>
+      <div>
+        <div class="section-title">NLP Q&amp;A</div>
+        <div class="section-subtitle">Text classification deep-dive questions</div>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question" onclick="toggleQA(this)">
+        <span class="q-num">Q09</span>
+        Explain TF-IDF. Why did you use it over word embeddings like Word2Vec?
+        <span class="chevron">▼</span>
+      </div>
+      <div class="qa-answer">
+        <p><strong>TF-IDF formula:</strong> TF-IDF(word) = TF(word in doc) × log(N / df(word))</p>
+        <ul>
+          <li><strong>TF (Term Frequency):</strong> count of word in this document / total words in document</li>
+          <li><strong>IDF (Inverse Document Frequency):</strong> log(total documents / documents containing this word). Rare words get high IDF — they're more informative</li>
+          <li><strong>Result:</strong> Words like "pothole", "sewage", "electricity" score high for their respective complaint types; "the", "is", "a" score near zero</li>
+        </ul>
+        <p><strong>Why TF-IDF over Word2Vec/BERT for this use case:</strong></p>
+        <ul>
+          <li><strong>Domain is keyword-driven:</strong> Municipal complaints have highly distinctive keywords per category. "pothole" → Roads, "leakage" → Water, "garbage" → Sanitation. TF-IDF captures this perfectly.</li>
+          <li><strong>Training data size:</strong> Word2Vec needs large corpora. For a domain-specific civic complaints dataset, TF-IDF + a simple classifier is more reliable with limited labeled data.</li>
+          <li><strong>Speed:</strong> TF-IDF vectorization is near-instant at inference. BERT would add 200–500ms per request.</li>
+          <li><strong>Interpretability:</strong> You can inspect which words have highest TF-IDF scores per category — useful for debugging and explaining predictions.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question" onclick="toggleQA(this)">
+        <span class="q-num">Q10</span>
+        What classifier did you use for category and severity? Why?
+        <span class="chevron">▼</span>
+      </div>
+      <div class="qa-answer">
+        <p>The exact classifier can be inferred from the pkl file sizes:</p>
+        <ul>
+          <li><strong>category_model.pkl (26KB)</strong> — very small, suggesting a lightweight model like Logistic Regression, Naive Bayes, or Linear SVC</li>
+          <li><strong>severity_model.pkl (2MB)</strong> — much larger, suggesting a more complex model like Random Forest, Gradient Boosting, or SVC with RBF kernel</li>
+        </ul>
+        <p>If asked which specifically, be honest: <em>"The category classifier is a lightweight linear model given its small size — likely Logistic Regression or Naive Bayes, both of which work excellently with TF-IDF sparse vectors. The severity model is more complex given its 2MB footprint, possibly an ensemble or SVC with a non-linear kernel."</em></p>
+        <p>General justification for linear models with TF-IDF:</p>
+        <ul>
+          <li>TF-IDF produces high-dimensional sparse vectors. Linear models (LR, Naive Bayes) are very effective in high-dimensional sparse feature spaces — this is well-established in NLP research</li>
+          <li>Fast training, fast inference, low memory during inference</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question" onclick="toggleQA(this)">
+        <span class="q-num">Q11</span>
+        Why use joblib instead of pickle for the NLP models?
+        <span class="chevron">▼</span>
+      </div>
+      <div class="qa-answer">
+        <ul>
+          <li><strong>joblib is optimized for NumPy arrays:</strong> sklearn models internally use large NumPy arrays (coefficient matrices, vocabulary arrays). joblib serializes these much more efficiently than pickle using memory-mapped files and compression.</li>
+          <li><strong>sklearn recommendation:</strong> The official sklearn documentation recommends joblib over pickle for sklearn estimators.</li>
+          <li><strong>Speed:</strong> joblib.load is faster for large numpy-backed objects — relevant for the 2MB severity model.</li>
+          <li><strong>In contrast:</strong> HealBridge AI used pickle directly — both work, but joblib is the better practice for sklearn artifacts.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question" onclick="toggleQA(this)">
+        <span class="q-num">Q12</span>
+        How would you handle a complaint text in a language other than English?
+        <span class="chevron">▼</span>
+      </div>
+      <div class="qa-answer">
+        <p>This is a genuine limitation of the current system — a great future improvement to mention:</p>
+        <ul>
+          <li><strong>Current behavior:</strong> The TF-IDF vectorizer was fitted on English text. Non-English input would be vectorized using the English vocabulary — most tokens would be OOV (out-of-vocabulary) resulting in a near-zero vector and a random/wrong prediction.</li>
+          <li><strong>Fix 1 — Translation preprocessing:</strong> Add a Google Translate API call before vectorization to translate to English first.</li>
+          <li><strong>Fix 2 — Multilingual TF-IDF:</strong> Retrain the TF-IDF + classifiers on a multilingual complaints dataset covering Hindi, Marathi, etc.</li>
+          <li><strong>Fix 3 — Multilingual BERT (mBERT):</strong> Replace TF-IDF with a multilingual transformer embedding — works across 100+ languages without translation.</li>
+          <li>The README mentions multilingual support as a planned feature — reference this directly.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 10. CHEATSHEET ══ -->
+  <section class="section" id="cheatsheet">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(16,185,129,0.1);">⚡</div>
+      <div>
+        <div class="section-title">Quick-Fire Cheatsheet</div>
+        <div class="section-subtitle">Memorize before walking in</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <h4 style="color:var(--accent-orange);margin-bottom:18px;">📌 Numbers to Know</h4>
+        <ul class="checklist">
+          <li><span class="check-icon">✦</span><strong>Port 8000</strong> — your Flask ML server</li>
+          <li><span class="check-icon">✦</span><strong>2</strong> endpoints you built (<code>analyze-text</code>, <code>analyze-image</code>)</li>
+          <li><span class="check-icon">✦</span><strong>4</strong> model artifacts you own (1 YOLO + 1 TF-IDF + 2 classifiers)</li>
+          <li><span class="check-icon">✦</span><strong>22MB</strong> — YOLOv8 weights file</li>
+          <li><span class="check-icon">✦</span><strong>2MB vs 26KB</strong> — severity model vs category model</li>
+          <li><span class="check-icon">✦</span><strong>3</strong> user roles (citizen, officer, traffic police)</li>
+          <li><span class="check-icon">✦</span><strong>4</strong> MongoDB collections (users, officers, complaints, challans)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4 style="color:var(--accent-blue);margin-bottom:18px;">🔑 Key Design Decisions</h4>
+        <ul class="checklist">
+          <li><span class="check-icon">✦</span>Flask ML server — separate process from Node.js (language isolation)</li>
+          <li><span class="check-icon">✦</span>All models loaded at startup, not per-request (performance)</li>
+          <li><span class="check-icon">✦</span>base64 image encoding in JSON (no multipart needed)</li>
+          <li><span class="check-icon">✦</span>Two separate classifiers for category + severity (independent tasks)</li>
+          <li><span class="check-icon">✦</span>joblib for sklearn models (better than pickle for numpy arrays)</li>
+          <li><span class="check-icon">✦</span>YOLOv8 (not CNN classifier) — gives bounding boxes, not just yes/no</li>
+          <li><span class="check-icon">✦</span>TF-IDF (not embeddings) — keyword-driven domain, fast, interpretable</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <h4 style="color:var(--accent-purple);margin-bottom:18px;">⚠️ Likely Weaknesses — Know Your Defenses</h4>
+      <div class="card-grid" style="gap:14px;">
+        <div style="background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.2);border-radius:10px;padding:16px;">
+          <div style="color:var(--accent-amber);font-weight:600;font-size:0.85rem;margin-bottom:8px;">⚠️ No confidence threshold on YOLO</div>
+          <p style="color:var(--text-secondary);font-size:0.83rem;"><strong>Defense:</strong> "I'd add a threshold filter (conf > 0.5) to remove low-confidence detections and improve result quality."</p>
+        </div>
+        <div style="background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.2);border-radius:10px;padding:16px;">
+          <div style="color:var(--accent-amber);font-weight:600;font-size:0.85rem;margin-bottom:8px;">⚠️ English-only NLP</div>
+          <p style="color:var(--text-secondary);font-size:0.83rem;"><strong>Defense:</strong> "Add translation preprocessing or retrain with multilingual data. BERT-multilingual would handle this natively."</p>
+        </div>
+        <div style="background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.2);border-radius:10px;padding:16px;">
+          <div style="color:var(--accent-amber);font-weight:600;font-size:0.85rem;margin-bottom:8px;">⚠️ Synchronous ML calls block complaint filing</div>
+          <p style="color:var(--text-secondary);font-size:0.83rem;"><strong>Defense:</strong> "Make ML analysis async — save complaint immediately, update AI fields in background."</p>
+        </div>
+        <div style="background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.2);border-radius:10px;padding:16px;">
+          <div style="color:var(--accent-amber);font-weight:600;font-size:0.85rem;margin-bottom:8px;">⚠️ No bounding box coordinates returned</div>
+          <p style="color:var(--text-secondary);font-size:0.83rem;"><strong>Defense:</strong> "Currently returns class + confidence only. Adding x,y,w,h coords would let the UI overlay boxes on the image."</p>
+        </div>
+        <div style="background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.2);border-radius:10px;padding:16px;">
+          <div style="color:var(--accent-amber);font-weight:600;font-size:0.85rem;margin-bottom:8px;">⚠️ No model versioning</div>
+          <p style="color:var(--text-secondary);font-size:0.83rem;"><strong>Defense:</strong> "In production, model artifacts should be versioned in cloud storage (S3) and fetched at startup, not committed to git."</p>
+        </div>
+        <div style="background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.2);border-radius:10px;padding:16px;">
+          <div style="color:var(--accent-amber);font-weight:600;font-size:0.85rem;margin-bottom:8px;">⚠️ No fallback if ML server crashes</div>
+          <p style="color:var(--text-secondary);font-size:0.83rem;"><strong>Defense:</strong> "Add health-check retry logic in Node.js and graceful degradation — complaints save even if ML is unavailable."</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h4 style="color:var(--accent-green);margin-bottom:18px;">📊 Topics to Be Strong On</h4>
+      <div class="skill-row">
+        <div class="skill-top"><span class="skill-label">YOLOv8 inference pipeline (base64 → PIL → YOLO → JSON)</span><span class="skill-pct">must know</span></div>
+        <div class="skill-bar"><div class="skill-fill" style="width:100%;background:linear-gradient(90deg,#f97316,#ec4899)"></div></div>
+      </div>
+      <div class="skill-row">
+        <div class="skill-top"><span class="skill-label">TF-IDF concept (TF × IDF, why it works for keywords)</span><span class="skill-pct">must know</span></div>
+        <div class="skill-bar"><div class="skill-fill" style="width:100%;background:linear-gradient(90deg,#ec4899,#8b5cf6)"></div></div>
+      </div>
+      <div class="skill-row">
+        <div class="skill-top"><span class="skill-label">Why YOLO over image classifier (bounding boxes vs binary)</span><span class="skill-pct">must know</span></div>
+        <div class="skill-bar"><div class="skill-fill" style="width:95%;background:linear-gradient(90deg,#8b5cf6,#3b82f6)"></div></div>
+      </div>
+      <div class="skill-row">
+        <div class="skill-top"><span class="skill-label">Flask microservice architecture (port 8000, startup loading)</span><span class="skill-pct">must know</span></div>
+        <div class="skill-bar"><div class="skill-fill" style="width:95%;background:linear-gradient(90deg,#3b82f6,#06b6d4)"></div></div>
+      </div>
+      <div class="skill-row">
+        <div class="skill-top"><span class="skill-label">joblib vs pickle for sklearn models</span><span class="skill-pct">strong</span></div>
+        <div class="skill-bar"><div class="skill-fill" style="width:80%;background:linear-gradient(90deg,#06b6d4,#10b981)"></div></div>
+      </div>
+      <div class="skill-row">
+        <div class="skill-top"><span class="skill-label">mAP / IoU evaluation metrics for object detection</span><span class="skill-pct">good</span></div>
+        <div class="skill-bar"><div class="skill-fill" style="width:75%;background:linear-gradient(90deg,#10b981,#f97316)"></div></div>
+      </div>
+      <div class="skill-row">
+        <div class="skill-top"><span class="skill-label">Overall MERN + system architecture (3 ports, 4 collections)</span><span class="skill-pct">talking point</span></div>
+        <div class="skill-bar"><div class="skill-fill" style="width:65%;background:linear-gradient(90deg,#f97316,#ec4899)"></div></div>
+      </div>
+    </div>
+
+    <div class="highlight-box hl-tip">
+      <div class="hl-icon">🚀</div>
+      <div class="hl-content">
+        <strong>Pro tip:</strong> When asked about YOLO, immediately connect it to the real-world impact — <em>"A citizen uploads a garbage photo, YOLO detects how many waste objects and their types, the system uses that to set complaint severity — replacing what would be a subjective manual assessment."</em> Ground every technical answer in the product use case.
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<button class="print-btn" onclick="printAll()">🖨️ Print / Save PDF</button>
+
+<script>
+  function toggleQA(el) {
+    const item = el.parentElement;
+    const answer = item.querySelector('.qa-answer');
+    const chevron = el.querySelector('.chevron');
+    const isOpen = answer.classList.contains('show');
+    document.querySelectorAll('.qa-answer.show').forEach(a => a.classList.remove('show'));
+    document.querySelectorAll('.qa-question.open').forEach(q => q.classList.remove('open'));
+    document.querySelectorAll('.chevron.open').forEach(c => c.classList.remove('open'));
+    if (!isOpen) {
+      answer.classList.add('show');
+      el.classList.add('open');
+      chevron.classList.add('open');
+    }
+  }
+
+  function printAll() {
+    document.querySelectorAll('.qa-answer').forEach(a => a.classList.add('show'));
+    document.querySelectorAll('.qa-question').forEach(q => q.classList.add('open'));
+    setTimeout(() => window.print(), 150);
+  }
+</script>
+</body>
+</html>
