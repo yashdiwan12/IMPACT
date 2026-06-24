@@ -2,6 +2,7 @@ services:
   - type: web
     name: impact-ml-server
     env: python
+    plan: free
     buildCommand: pip install -r ml-server/requirements.txt
     startCommand: python ml-server/app.py
     envVars:
