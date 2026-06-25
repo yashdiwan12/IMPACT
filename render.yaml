@@ -1,4 +1,23 @@
 services:
+  # ── Express API Server (Node.js) ──────────────────────────
+  - type: web
+    name: impact-api-server
+    env: node
+    plan: free
+    buildCommand: cd server && npm install
+    startCommand: cd server && node server.js
+    healthCheckPath: /api/auth
+    envVars:
+      - key: NODE_VERSION
+        value: 20.11.0
+      - key: MONGO_URI
+        sync: false            # set in Render dashboard (secret)
+      - key: JWT_SECRET
+        sync: false            # set in Render dashboard (secret)
+      - key: ML_API_URL
+        sync: false            # set after ml-server deploys
+
+  # ── Flask ML Server (Python) ──────────────────────────────
   - type: web
     name: impact-ml-server
     env: python
@@ -9,4 +28,5 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
+
 
