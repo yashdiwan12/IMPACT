@@ -4,7 +4,9 @@ services:
     env: python
     plan: free
     buildCommand: pip install -r ml-server/requirements.txt
-    startCommand: gunicorn --chdir ml-server app:app --timeout 120
+    startCommand: gunicorn --chdir ml-server app:app --bind 0.0.0.0:$PORT --timeout 300
+    healthCheckPath: /health
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
+
